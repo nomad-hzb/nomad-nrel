@@ -61,6 +61,7 @@ from nomad.metainfo import (
 from nomad.parsing import MatchingParser
 
 from nomad_nrel.schema_packages.nrel_package import (
+    NREL_AtomicLayerDeposition,
     NREL_Batch,
     NREL_Cleaning,
     NREL_Evaporation,
@@ -71,7 +72,6 @@ from nomad_nrel.schema_packages.nrel_package import (
     NREL_SpinCoating,
     NREL_Sputtering,
     NREL_Substrate,
-    NREL_AtomicLayerDeposition,
 )
 
 """

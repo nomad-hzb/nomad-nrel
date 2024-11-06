@@ -16,55 +16,28 @@
 # limitations under the License.
 #
 
-import os
 import random
 import string
 
-import numpy as np
 from baseclasses import (
     BaseMeasurement,
     BaseProcess,
     Batch,
     LayerDeposition,
-    ReadableIdentifiersCustom,
 )
-from baseclasses.assays import (
-    EnvironmentMeasurement,
-)
-from baseclasses.characterizations import XRD, XRDData
-from baseclasses.characterizations.electron_microscopy import SEM_Microscope_Merlin
-from baseclasses.chemical import Chemical
-from baseclasses.chemical_energy import ElectroChemicalSetup, Electrode, Environment
-from baseclasses.data_transformations import NKData
-from baseclasses.experimental_plan import ExperimentalPlan
-from baseclasses.helper.add_solar_cell import add_band_gap
-from baseclasses.helper.utilities import get_encoding
 from baseclasses.material_processes_misc import (
     Cleaning,
     LaserScribing,
     PlasmaCleaning,
     SolutionCleaning,
-    Storage,
     UVCleaning,
 )
 from baseclasses.solar_energy import (
     BasicSampleWithID,
     EQEMeasurement,
     JVMeasurement,
-    MPPTracking,
-    MPPTrackingHsprintCustom,
-    MPPTrackingProperties,
-    OpticalMicroscope,
-    PLImaging,
-    PLMeasurement,
-    SolarCellEQECustom,
-    SolarCellProperties,
     SolcarCellSample,
-    StandardSampleSolarCell,
     Substrate,
-    TimeResolvedPhotoluminescence,
-    UVvisMeasurement,
-    trSPVMeasurement,
 )
 from baseclasses.solution import Ink, Solution, SolutionPreparationStandard
 from baseclasses.vapour_based_deposition import (
@@ -76,26 +49,19 @@ from baseclasses.vapour_based_deposition import (
 from baseclasses.voila import VoilaNotebook
 from baseclasses.wet_chemical_deposition import (
     BladeCoating,
-    Crystallization,
     DipCoating,
     LP50InkjetPrinting,
     SlotDieCoating,
     SpinCoating,
-    SpinCoatingRecipe,
-    SprayPyrolysis,
-    VaporizationAndDropCasting,
     WetChemicalDeposition,
 )
 from nomad.datamodel.data import EntryData
-from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
-from nomad.datamodel.results import ELN, Material, Properties, Results
 from nomad.metainfo import (
     Quantity,
     SchemaPackage,
     Section,
     SubSection,
 )
-from nomad.units import ureg
 
 m_package = SchemaPackage()
 
@@ -413,6 +379,7 @@ class NREL_Sputtering(Sputtering, EntryData):
 
 # %% ### AtomicLayerDepositio
 
+
 class NREL_AtomicLayerDeposition(AtomicLayerDeposition, EntryData):
     m_def = Section(
         a_eln=dict(
@@ -607,8 +574,7 @@ class NREL_Process(BaseProcess, EntryData):
                 'instruments',
                 'results',
             ],
-            properties=dict(
-                order=['name', 'present', 'data_file', 'batch', 'samples']),
+            properties=dict(order=['name', 'present', 'data_file', 'batch', 'samples']),
         )
     )
 
