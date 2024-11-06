@@ -18,16 +18,17 @@ class NRELExperimentParserEntryPoint(ParserEntryPoint):
 
 
 nrel_jv_parser = NRELJVParserEntryPoint(
-    name='NRELParser',
+    name='NRELJVParser',
     description='Parser for NREL jv files',
-    mainfile_name_re='^(.+\.?.+\.((eqe|jv|jvi|pl|pli|hy|spv|env|uvvis|PL|JV|PLI|EQE|SEM|sem|xrd|mppt)\..{1,4})|.+\.nk)$',
+    mainfile_name_re=r'^.*CU_.+_fwd_lt_lp1_.+\.txt$',
     mainfile_mime_re='(application|text|image)/.*',
+    mainfile_contents_re=r"""^// \*\*\*\*\*\*\*\*\*\*\*\*\*\* HEADER START \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*""",  # noqa E501
 )
 
 
 nrel_experiment_parser = NRELExperimentParserEntryPoint(
     name='NRELBatchParser',
     description='Parser for NREL Batch xlsx files',
-    mainfile_name_re='^(.+\.xlsx)$',
+    mainfile_name_re=r'^(.+\.xlsx)$',
     mainfile_mime_re='(application|text|image)/.*',
 )

@@ -528,7 +528,7 @@ class NRELExperimentParser(MatchingParser):
         df = pd.read_excel(mainfile, header=[0, 1])
 
         sample_ids = df['Experiment Info']['Nomad ID'].dropna().to_list()
-        batch_id = '_'.join(sample_ids[0].split('_')[:-1])
+        batch_id = '_'.join([sample_ids[0].split('_')[0], sample_ids[0].split('_')[2]])
         archives = [map_batch(sample_ids, batch_id, upload_id)]
         substrates = []
         substrates_col = [

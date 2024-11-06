@@ -475,24 +475,46 @@ class NREL_JVmeasurement(JVMeasurement, EntryData):
         ],
     )
 
+    data_files = Quantity(
+        type=str,
+        shape=['*'],
+        a_eln=dict(component='FileEditQuantity'),
+        a_browser=dict(adaptor='RawFileAdaptor'),
+    )
+
     def normalize(self, archive, logger):
-        # from baseclasses.helper.archive_builder.jv_archive import get_jv_archive
+        from baseclasses.solar_energy.jvmeasurement import (
+            SolarCellJVCurveCustom,
+        )
 
-        # from nomad_hysprint.schema_packages.file_parser.jv_parser import (
-        #     get_jv_data,
-        # )
+        from nomad_nrel.schema_packages.file_parser.jv_parser import (
+            get_jv_data_nrel,
+        )
 
-        # if self.data_file:
-        #     # todo detect file format
-        #     with archive.m_context.raw_file(self.data_file, 'br') as f:
-        #         encoding = get_encoding(f)
+        if self.data_files:
+            curves = []
+            for file in self.data_files:
+                with archive.m_context.raw_file(file, 'tr') as f:
+                    jv_dict = get_jv_data_nrel(f.read(), file)
+                    curves.extend(jv_dict['jv_curve'])
+            jv_dict['jv_curve'] = curves
 
-        #     with archive.m_context.raw_file(
-        #         self.data_file, 'tr', encoding=encoding
-        #     ) as f:
-        #         jv_dict, location = get_jv_data(f.read())
-        #         self.location = location
-        #         get_jv_archive(jv_dict, self.data_file, self)
+            self.active_area = (
+                jv_dict['active_area'] if 'active_area' in jv_dict else None
+            )
+            self.intensity = jv_dict['intensity'] if 'intensity' in jv_dict else None
+
+            jv_curve = []
+            for curve_idx, curve in enumerate(jv_dict['jv_curve']):
+                jv_set = SolarCellJVCurveCustom(
+                    cell_name=curve['name'],
+                    voltage=curve['voltage'],
+                    current_density=curve['current_density'],
+                )
+                jv_set.normalize(archive, logger)
+                jv_curve.append(jv_set)
+
+            self.jv_curve = jv_curve
 
         super().normalize(archive, logger)
 

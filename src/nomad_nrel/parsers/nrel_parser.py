@@ -62,18 +62,27 @@ class NRELJVParser(MatchingParser):
     def parse(self, mainfile: str, archive: EntryArchive, logger):
         # Log a hello world, just to get us started. TODO remove from an actual parser.
 
-        mainfile_split = os.path.basename(mainfile).split('.')
+        mainfile_split = os.path.basename(mainfile).split('_')
 
         entry = NREL_JVmeasurement()
 
         archive.metadata.entry_name = os.path.basename(mainfile)
 
-        search_id = mainfile_split[0]
+        search_id = '_'.join(mainfile_split[0:3])
         set_sample_reference(archive, entry, search_id)
 
-        entry.name = f'{search_id} JV'
+        entry.name = f'{search_id} {mainfile_split[-2]} JV'
+        data_files = []
+        for item in archive.m_context.upload_files.raw_directory_list():
+            if (
+                item.path.startswith('_'.join(mainfile_split[0:2]))
+                and item.path.endswith('.txt')
+                and mainfile_split[-2] in item.path
+            ):
+                data_files.append(item.path)
 
-        entry.data_file = os.path.basename(mainfile)
+        entry.data_files = data_files
+
         entry.datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
         file_name = f'{os.path.basename(mainfile)}.archive.json'
