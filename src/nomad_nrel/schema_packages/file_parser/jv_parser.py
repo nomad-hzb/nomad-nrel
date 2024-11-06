@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+import re
 from io import StringIO
 
 import numpy as np
@@ -66,3 +67,38 @@ def get_jv_data_nrel(filedata, file_name):
     )
 
     return jv_dict
+
+
+def get_jv_data_stability_nrel(filedata):
+    # Block to clean up some bad characters found in the file which gives
+    # trouble reading.
+    header_string = re.search(r'\* HEADER START \*[\S\n\s]+\* HEADER END \*', filedata)
+    data = {}
+    for line in header_string.group().split('\n')[1:-1]:
+        line_split = line.split(': ')
+        data.update({line_split[0][3:]: line_split[1]})
+    data['curves'] = []
+    pattern = re.compile(
+        r'(\* START TEST HEADER \*[\S\n\s]+?\* END TEST HEADER \*\*\*\*\*\*\*\n\n(.*\t.*\t.*\n)+)'
+    )  # noqa E501
+
+    for m in pattern.finditer(filedata):
+        tmp = {}
+        for line in m.group().split('\n')[1:5]:
+            line_split = line.split(': ')
+            tmp.update({line_split[0][2:]: line_split[1]})
+
+        table = '\n'.join(m.group().split('\n')[7:])
+        df = pd.read_csv(
+            StringIO(table), sep='\t', names=['current', 'voltage', 'time']
+        )
+        tmp['data'] = df
+        data['curves'].append(tmp)
+
+    return data
+
+
+# file = "/home/a2853/Documents/Projects/nomad/nrel/RT_1062_pXA_IVp_50_1150_r.txt"
+
+# with open(file, "r") as f:
+#     h = get_jv_data_stability_nrel(f.read())

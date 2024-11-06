@@ -56,6 +56,7 @@ from baseclasses.wet_chemical_deposition import (
     WetChemicalDeposition,
 )
 from nomad.datamodel.data import EntryData
+from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import (
     Quantity,
     SchemaPackage,
@@ -515,6 +516,92 @@ class NREL_JVmeasurement(JVMeasurement, EntryData):
                 jv_curve.append(jv_set)
 
             self.jv_curve = jv_curve
+
+        super().normalize(archive, logger)
+
+
+class NREL_JVmeasurementStability(JVMeasurement, PlotSection, EntryData):
+    m_def = Section(
+        a_eln=dict(
+            hide=[
+                'lab_id',
+                'solution',
+                'users',
+                'author',
+                'certified_values',
+                'certification_institute',
+                'end_time',
+                'steps',
+                'instruments',
+                'results',
+            ],
+            properties=dict(
+                order=[
+                    'name',
+                    'data_file',
+                    'active_area',
+                    'intensity',
+                    'integration_time',
+                    'settling_time',
+                    'averaging',
+                    'compliance',
+                    'samples',
+                ]
+            ),
+        ),
+    )
+
+    def normalize(self, archive, logger):
+        import plotly.graph_objects as go
+        from baseclasses.solar_energy.jvmeasurement import (
+            SolarCellJVCurveCustom,
+        )
+
+        from nomad_nrel.schema_packages.file_parser.jv_parser import (
+            get_jv_data_stability_nrel,
+        )
+
+        if self.data_file:
+            with archive.m_context.raw_file(self.data_file, 'tr') as f:
+                jv_dict = get_jv_data_stability_nrel(f.read())
+
+            jv_curve = []
+            for curve_idx, curve in enumerate(jv_dict['curves']):
+                jv_set = SolarCellJVCurveCustom(
+                    light_intensity=100 * float(curve['Light']),
+                    cell_name=curve['Timestamp'],
+                    voltage=curve['data']['voltage'] * -1,
+                    current_density=curve['data']['current']
+                    * 1000
+                    / float(jv_dict['PxSize']),
+                )
+                jv_set.normalize(archive, logger)
+                jv_curve.append(jv_set)
+
+            self.jv_curve = jv_curve
+
+            fig1 = go.Figure()
+            fig1.add_trace(
+                go.Scatter(
+                    x=[
+                        int(x.get('cell_name'))
+                        if x.get('cell_name').isdigit()
+                        else None
+                        for x in self.jv_curve
+                    ],
+                    y=[x.get('efficiency') for x in self.jv_curve],
+                    name='Efficiency over timestamps',
+                    marker=dict(color='blue'),
+                )
+            )
+            self.figures = [
+                PlotlyFigure(
+                    label='Efficiency over timestamps',
+                    index=2,
+                    open=True,
+                    figure=fig1.to_plotly_json(),
+                )
+            ]
 
         super().normalize(archive, logger)
 
