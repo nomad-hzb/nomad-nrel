@@ -13,18 +13,18 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
 ]
-name = "nomad-hysprint"
-description = "A schema package plugin for hysprint lab at hzb."
+name = "nomad-nrel"
+description = "A schema package plugin for labs at nrel and Uni Boulder."
 version = "1.0.0"
 readme = "README.rst"
 requires-python = ">=3.10"
 authors = [
     { name = "Michael Götte", email = "michael.goette@helmholtz-berlin.de" },
-    { name = "Carla Terboven", email = "carla.terboven@helmholtz-berlin.de" },
+    { name = "Paolo Graniero", email = "paolo.graniero.goette@helmholtz-berlin.de" },
 
 ]
 maintainers = [
-    { name = "Carla Terboven", email = "carla.terboven@helmholtz-berlin.de" },
+    { name = "Paolo Graniero", email = "paolo.graniero.goette@helmholtz-berlin.de" },
     { name = "Michael Götte", email = "michael.goette@helmholtz-berlin.de" },
 ]
 license = { file = "LICENSE" }
@@ -33,7 +33,7 @@ dependencies = [
     'nomad-baseclasses @ git+https://github.com/nomad-hzb/nomad-baseclasses.git',
     'nomad-measurements']
 [project.urls]
-Repository = "https://github.com/nomad-hzb/nomad-hysprint"
+Repository = "https://github.com/nomad-hzb/nomad-nrel"
 
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "structlog"]
@@ -122,6 +122,6 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [project.entry-points.'nomad.plugin']
-hysprint_package = "nomad_hysprint.schema_packages:hysprint_package"
-hysprint_parser = "nomad_hysprint.parsers:hysprint_parser"
-hysprint_experiment_parser = "nomad_hysprint.parsers:hysprint_experiment_parser"
+nrel_package = "nomad_nrel.schema_packages:nrel_package"
+nrel_parser = "nomad_nrel.parsers:nrel_parser"
+nrel_experiment_parser = "nomad_nrel.parsers:nrel_experiment_parser"

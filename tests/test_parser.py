@@ -9,7 +9,7 @@ def set_monkey_patch(monkeypatch):
         return None
 
     monkeypatch.setattr(
-        'nomad_hysprint.parsers.hysprint_measurement_parser.set_sample_reference',
+        'nomad_nrel.parsers.nrel_measurement_parser.set_sample_reference',
         mockreturn_search,
     )
 
