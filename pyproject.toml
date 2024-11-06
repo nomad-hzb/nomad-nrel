@@ -123,5 +123,5 @@ where = ["src"]
 
 [project.entry-points.'nomad.plugin']
 nrel_package = "nomad_nrel.schema_packages:nrel_package"
-nrel_parser = "nomad_nrel.parsers:nrel_parser"
+nrel_jv_parser = "nomad_nrel.parsers:nrel_jv_parser"
 nrel_experiment_parser = "nomad_nrel.parsers:nrel_experiment_parser"

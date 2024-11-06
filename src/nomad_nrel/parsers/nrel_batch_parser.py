@@ -60,18 +60,18 @@ from nomad.metainfo import (
 )
 from nomad.parsing import MatchingParser
 
-from nomad_hysprint.schema_packages.hysprint_package import (
-    HySprint_Batch,
-    HySprint_Cleaning,
-    HySprint_Evaporation,
-    HySprint_LaserScribing,
-    HySprint_Process,
-    HySprint_Sample,
-    HySprint_SlotDieCoating,
-    HySprint_SpinCoating,
-    HySprint_Sputtering,
-    HySprint_Substrate,
-    IRIS_AtomicLayerDeposition,
+from nomad_nrel.schema_packages.nrel_package import (
+    NREL_Batch,
+    NREL_Cleaning,
+    NREL_Evaporation,
+    NREL_LaserScribing,
+    NREL_Process,
+    NREL_Sample,
+    NREL_SlotDieCoating,
+    NREL_SpinCoating,
+    NREL_Sputtering,
+    NREL_Substrate,
+    NREL_AtomicLayerDeposition,
 )
 
 """
@@ -111,7 +111,7 @@ def get_value(data, key, default=None, number=True):
 
 
 def map_basic_sample(data, substrate_name, upload_id):
-    archive = HySprint_Sample(
+    archive = NREL_Sample(
         name=data['Nomad ID'],
         lab_id=data['Nomad ID'],
         substrate=get_reference(upload_id, substrate_name),
@@ -121,7 +121,7 @@ def map_basic_sample(data, substrate_name, upload_id):
 
 
 def map_batch(batch_ids, batch_id, upload_id):
-    archive = HySprint_Batch(
+    archive = NREL_Batch(
         name=batch_id,
         lab_id=batch_id,
         entities=[
@@ -184,7 +184,7 @@ def map_solutions(data):
 
 
 def map_spin_coating(i, j, lab_ids, data, upload_id):
-    archive = HySprint_SpinCoating(
+    archive = NREL_SpinCoating(
         name='spin coating ' + get_value(data, 'Material name', '', False),
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', '', False),
@@ -235,7 +235,7 @@ def map_spin_coating(i, j, lab_ids, data, upload_id):
 
 
 def map_sdc(i, j, lab_ids, data, upload_id):
-    archive = HySprint_SlotDieCoating(
+    archive = NREL_SlotDieCoating(
         name='slot die coating ' + get_value(data, 'Material name', '', False),
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', None, False),
@@ -284,7 +284,7 @@ def map_sdc(i, j, lab_ids, data, upload_id):
 
 
 def map_cleaning(i, j, lab_ids, data, upload_id):
-    archive = HySprint_Cleaning(
+    archive = NREL_Cleaning(
         name='Cleaning',
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', '', False),
@@ -300,7 +300,7 @@ def map_cleaning(i, j, lab_ids, data, upload_id):
 
 
 def map_substrate(data):
-    archive = HySprint_Substrate(
+    archive = NREL_Substrate(
         name='Substrate '
         + get_value(data, 'Sample dimension', '', False)
         + ' '
@@ -315,7 +315,7 @@ def map_substrate(data):
 
 
 def map_evaporation(i, j, lab_ids, data, upload_id):
-    archive = HySprint_Evaporation(
+    archive = NREL_Evaporation(
         name='evaporation ' + get_value(data, 'Material name', '', False),
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', '', False),
@@ -361,7 +361,7 @@ def map_evaporation(i, j, lab_ids, data, upload_id):
 
 
 def map_sputtering(i, j, lab_ids, data, upload_id):
-    archive = HySprint_Sputtering(
+    archive = NREL_Sputtering(
         name='sputtering ' + get_value(data, 'Material name', '', False),
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', '', False),
@@ -401,7 +401,7 @@ def map_sputtering(i, j, lab_ids, data, upload_id):
 
 
 def map_laser_scribing(i, j, lab_ids, data, upload_id):
-    archive = HySprint_LaserScribing(
+    archive = NREL_LaserScribing(
         name='laser scribing',
         positon_in_experimental_plan=i,
         samples=[
@@ -425,7 +425,7 @@ def map_laser_scribing(i, j, lab_ids, data, upload_id):
 
 
 def map_atomic_layer_deposition(i, j, lab_ids, data, upload_id):
-    archive = IRIS_AtomicLayerDeposition(
+    archive = NREL_AtomicLayerDeposition(
         name='atomic layer deposition '
         + get_value(data, 'Material name', '', number=False),
         positon_in_experimental_plan=i,
@@ -482,7 +482,7 @@ def map_atomic_layer_deposition(i, j, lab_ids, data, upload_id):
 
 
 def map_generic(i, j, lab_ids, data, upload_id):
-    archive = HySprint_Process(
+    archive = NREL_Process(
         name=get_value(data, 'Name', '', False),
         positon_in_experimental_plan=i,
         description=get_value(data, 'Notes', '', False),
@@ -497,11 +497,11 @@ def map_generic(i, j, lab_ids, data, upload_id):
     return (f'{i}_{j}_generic_process', archive)
 
 
-class RawHySprintExperiment(EntryData):
+class RawNRELExperiment(EntryData):
     processed_archive = Quantity(type=Entity, shape=['*'])
 
 
-class HySprintExperimentParser(MatchingParser):
+class NRELExperimentParser(MatchingParser):
     def is_mainfile(
         self,
         filename: str,
@@ -618,4 +618,4 @@ class HySprintExperimentParser(MatchingParser):
             create_archive(a[1], archive, file_name)
             refs.append(get_reference(upload_id, file_name))
 
-        archive.data = RawHySprintExperiment(processed_archive=refs)
+        archive.data = RawNRELExperiment(processed_archive=refs)
